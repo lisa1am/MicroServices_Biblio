@@ -62,7 +62,7 @@ public class LivreController {
                 livre.setTitre(livreEnBase.getTitre());
             }
             repository.save(livre);
-            return "Le livre ayant l'ISBN "+isbn+" a été mis à jour avec succès";
+            return "Le livre ayant l'ISBN : "+isbn+" a été mis à jour avec succès";
         }
 
 
