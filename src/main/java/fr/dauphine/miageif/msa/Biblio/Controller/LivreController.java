@@ -36,17 +36,25 @@ public class LivreController {
     }
 
     @DeleteMapping("livres/isbn/{isbn}")
-    public String deleteByIsbn(@PathVariable String isbn){
-        repository.deleteByIsbn(isbn);
-        return "Le livre ayant l'ISBN "+isbn+" a été supprimé de la base de données";
+    public boolean deleteByIsbn(@PathVariable String isbn){
+        if (!repository.existsByIsbn(isbn)){
+            System.out.println("Le livre n'existe pas dans la base de données !");
+            return false;
+        }else{
+            repository.deleteByIsbn(isbn);
+            System.out.println("Le livre ayant l'ISBN "+isbn+" a été supprimé de la base de données");
+            return true;
+        }
+
     }
 
 
     //HEADER : 'Content-type: application/json'
     @PutMapping("livres/isbn/{isbn}")
-    public String updateLivre(@RequestBody Livre livre, @PathVariable String isbn) {
+    public boolean updateLivre(@RequestBody Livre livre, @PathVariable String isbn) {
         if (!repository.existsByIsbn(isbn)){
-            return "Le livre n'existe pas dans la base de données !";
+            System.out.println("Le livre n'existe pas dans la base de données !");
+            return false;
         }else{
             Livre livreEnBase = repository.findByIsbn(isbn);
             if(livre.getAuteur() == null){
@@ -62,7 +70,8 @@ public class LivreController {
                 livre.setTitre(livreEnBase.getTitre());
             }
             repository.save(livre);
-            return "Le livre ayant l'ISBN : "+isbn+" a été mis à jour avec succès";
+            System.out.println("Le livre ayant l'ISBN : "+isbn+" a été mis à jour avec succès");
+            return true;
         }
 
 
@@ -71,12 +80,18 @@ public class LivreController {
     }
 
     @PostMapping("livres/")
-    public String addLivre(@RequestBody Livre livre){
-        if (repository.existsByIsbn(livre.getIsbn()))
-            return "Le livre existe déjà dans la base de données !";
+    public boolean addLivre(@RequestBody Livre livre){
+        if (repository.existsByIsbn(livre.getIsbn())){
+            System.out.println("Le livre existe déjà dans la base de données !");
+            return false;
+        }else{
+            repository.save(livre);
+           System.out.println("Le livre a été enregistré avec succès");
+            return true;
+        }
 
-        repository.save(livre);
-        return "Le livre a été enregistré avec succès";
+
+
     }
 
 
